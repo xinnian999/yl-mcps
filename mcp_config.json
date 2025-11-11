@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "yl-git-server": {
+      "command": "node",
+      "args": ["/Users/mac/Desktop/code/yl-mcps/yl-git-server/src/index.js"]
+    }
+  }
+}
