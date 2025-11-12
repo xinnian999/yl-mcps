@@ -4,7 +4,7 @@ import { fileURLToPath } from 'url';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// 项目根目录（使用调用者的当前工作目录）
+// 项目根目录
 export const PROJECT_ROOT = process.cwd();
 
 export const SERVER_CONFIG = {
@@ -14,10 +14,9 @@ export const SERVER_CONFIG = {
 
 export const GITIGNORE_TEMPLATE = `# Dependencies
 node_modules/
-npm-debug.log*
-yarn-debug.log*
+npm-error.log*
 yarn-error.log*
-pnpm-debug.log*
+pnpm-error.log*
 
 # Environment variables
 .env

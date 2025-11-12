@@ -2,7 +2,6 @@ import { execSync } from 'child_process';
 import fs from 'fs';
 import path from 'path';
 import { GITIGNORE_TEMPLATE } from './config.js';
-import { debugUtils } from './debug.js';
 
 // 全局工作目录变量
 let globalWorkingDirectory = null;
@@ -51,7 +50,6 @@ function setWorkingDirectory(path) {
   }
   
   globalWorkingDirectory = path;
-  debugUtils.info(`工作目录已设置为: ${path}`);
   
   return `✅ 工作目录已设置为: ${path}`;
 }
@@ -62,11 +60,6 @@ function setWorkingDirectory(path) {
 function execGitCommand(command, options = {}) {
   const workingDir = getUserWorkingDirectory();
   
-  debugUtils.debug(`Executing git command: ${command}`, {
-    workingDir,
-    originalCwd: process.cwd(),
-    pwd: process.env.PWD
-  });
   
   return execSync(command, {
     cwd: workingDir,
@@ -234,87 +227,6 @@ export const toolHandlers = {
     return createResponse(result);
   }),
 
-  debug_info: withErrorHandling(async (args) => {
-    const includeLogs = args?.include_logs !== false;
-    const logLines = args?.log_lines || 50;
-    
-    const report = debugUtils.createDebugReport();
-    
-    let debugInfo = `🔍 **调试信息报告**\n\n`;
-    debugInfo += `**时间**: ${report.timestamp}\n\n`;
-    
-    debugInfo += `**系统信息**:\n`;
-    debugInfo += `- Node.js 版本: ${report.systemInfo.nodeVersion}\n`;
-    debugInfo += `- 平台: ${report.systemInfo.platform} (${report.systemInfo.arch})\n`;
-    debugInfo += `- 工作目录: ${report.systemInfo.cwd}\n`;
-    debugInfo += `- 内存使用: ${Math.round(report.systemInfo.memoryUsage.heapUsed / 1024 / 1024)}MB / ${Math.round(report.systemInfo.memoryUsage.heapTotal / 1024 / 1024)}MB\n\n`;
-    
-    if (report.gitStatus) {
-      if (report.gitStatus.error) {
-        debugInfo += `**Git 状态**: ❌ ${report.gitStatus.error}\n\n`;
-      } else {
-        debugInfo += `**Git 状态**:\n`;
-        debugInfo += `- 当前分支: ${report.gitStatus.branch || '未知'}\n`;
-        debugInfo += `- 工作区状态: ${report.gitStatus.status || '干净'}\n`;
-        debugInfo += `- 远程仓库: ${report.gitStatus.remotes || '无'}\n\n`;
-      }
-    }
-    
-    debugInfo += `**调试模式**: ${debugUtils.debugMode ? '✅ 启用' : '❌ 禁用'}\n`;
-    debugInfo += `**日志文件**: ${debugUtils.logFile}\n\n`;
-    
-    if (includeLogs && report.recentLogs.length > 0) {
-      debugInfo += `**最近日志** (最新 ${Math.min(logLines, report.recentLogs.length)} 条):\n`;
-      report.recentLogs.slice(-logLines).forEach(log => {
-        const time = new Date(log.timestamp).toLocaleTimeString();
-        debugInfo += `[${time}] ${log.level.toUpperCase()}: ${log.message}\n`;
-      });
-    } else {
-      debugInfo += `**日志**: 无可用日志记录\n`;
-    }
-    
-    return createResponse(debugInfo);
-  }),
-
-  debug_clear_logs: withErrorHandling(async () => {
-    debugUtils.clearLogs();
-    return createResponse('✅ 调试日志已清理');
-  }),
-
-  debug_working_dir: withErrorHandling(async () => {
-    const workingDir = getUserWorkingDirectory();
-    
-    let result = `📁 **工作目录信息**\n\n`;
-    result += `**当前工作目录**: ${workingDir}\n`;
-    result += `**process.cwd()**: ${process.cwd()}\n`;
-    result += `**PWD 环境变量**: ${process.env.PWD || '未设置'}\n`;
-    result += `**MCP_WORKING_DIR**: ${process.env.MCP_WORKING_DIR || '未设置'}\n\n`;
-    
-    // 检查目录是否存在
-    try {
-      const stats = fs.statSync(workingDir);
-      result += `**目录状态**: ${stats.isDirectory() ? '✅ 有效目录' : '❌ 不是目录'}\n`;
-    } catch (error) {
-      result += `**目录状态**: ❌ 目录不存在 (${error.message})\n`;
-    }
-    
-    // 检查是否是 Git 仓库
-    try {
-      execGitCommand('git rev-parse --git-dir');
-      result += `**Git 仓库**: ✅ 是 Git 仓库\n`;
-      
-      try {
-        const branch = execGitCommand('git branch --show-current').trim();
-        result += `**当前分支**: ${branch || '未知'}\n`;
-      } catch (e) {
-        result += `**当前分支**: 无法获取\n`;
-      }
-    } catch (error) {
-      result += `**Git 仓库**: ❌ 不是 Git 仓库\n`;
-    }
-    
-    return createResponse(result);
-  }),
 
   set_working_dir: withErrorHandling(async (args) => {
     const dirPath = args?.path;
@@ -332,7 +244,6 @@ export const toolHandlers = {
     }
     
     globalWorkingDirectory = dirPath;
-    debugUtils.info(`工作目录已设置为: ${dirPath}`);
     
     return createResponse(`✅ 工作目录已设置为: ${dirPath}`);
   }),
