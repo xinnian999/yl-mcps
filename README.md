@@ -182,20 +182,16 @@ yl-mcps/
 
 ### 常见问题
 
-**Q: npx 连接失败或卡住**
-A: 确保在 npx 命令中添加 `-y` 参数，如 `["npx", "-y", "yl-mcp-git-server"]`
+**【Mac环境】通过npx连接mcp失败**
 
-**Q: MCP 服务器无法启动**
-A: 检查 Node.js 版本，确保 >= 16.0.0
+多数是因为权限问题导致。
 
-**Q: Git 命令执行失败**
-A: 确保当前目录是 Git 仓库，且有适当的权限
+执行以下命令修复权限：
 
-**Q: npm 权限错误 (EACCES)**
-A: 如果遇到类似 "Your cache folder contains root-owned files" 的错误，执行以下命令修复权限：
 ```bash
 sudo chown -R $(id -u):$(id -g) "$HOME/.npm"
 ```
+
 这通常是由于之前使用 `sudo npm` 命令导致的缓存文件权限问题。
 
 ## 📊 版本信息
