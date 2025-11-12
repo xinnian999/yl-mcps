@@ -1,0 +1,27 @@
+{
+  "name": "yl-mcp-git-server",
+  "version": "1.1.2",
+  "description": "MCP server for automated git operations",
+  "type": "module",
+  "main": "src/index.js",
+  "bin": {
+    "yl-mcp-git-server": "src/index.js"
+  },
+  "scripts": {
+    "start": "node src/index.js",
+    "debug": "DEBUG=true node src/index.js",
+    "debug:verbose": "DEBUG=true LOG_LEVEL=debug node src/index.js",
+    "test": "npx @modelcontextprotocol/inspector node src/index.js",
+    "test:debug": "DEBUG=true npx @modelcontextprotocol/inspector node src/index.js"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^0.5.0"
+  },
+  "keywords": ["mcp", "git", "model-context-protocol"],
+  "author": "Your Name",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/yourusername/mcp-git-server.git"
+  }
+}

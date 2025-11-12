@@ -4,8 +4,8 @@ import { fileURLToPath } from 'url';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// 项目根目录（yl-git-server 的上级目录）
-export const PROJECT_ROOT = path.resolve(__dirname, '../..');
+// 项目根目录（使用调用者的当前工作目录）
+export const PROJECT_ROOT = process.cwd();
 
 export const SERVER_CONFIG = {
   name: 'git-auto-server',

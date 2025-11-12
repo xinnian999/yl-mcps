@@ -64,4 +64,53 @@ export const TOOL_DEFINITIONS = [
       required: ['message'],
     },
   },
+  {
+    name: 'debug_info',
+    description: '获取调试信息和系统状态，用于故障排除',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        include_logs: {
+          type: 'boolean',
+          description: '是否包含最近的日志记录',
+          default: true,
+        },
+        log_lines: {
+          type: 'number',
+          description: '要包含的日志行数',
+          default: 50,
+        },
+      },
+    },
+  },
+  {
+    name: 'debug_clear_logs',
+    description: '清理调试日志文件',
+    inputSchema: {
+      type: 'object',
+      properties: {},
+    },
+  },
+  {
+    name: 'debug_working_dir',
+    description: '显示工作目录信息，用于调试目录相关问题',
+    inputSchema: {
+      type: 'object',
+      properties: {},
+    },
+  },
+  {
+    name: 'set_working_dir',
+    description: '设置 Git 操作的工作目录',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        path: {
+          type: 'string',
+          description: '要设置的工作目录路径',
+        },
+      },
+      required: ['path'],
+    },
+  },
 ];

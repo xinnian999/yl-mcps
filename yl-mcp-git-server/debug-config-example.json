@@ -1,0 +1,21 @@
+{
+  "mcpServers": {
+    "yl-git-server-debug": {
+      "command": "npx",
+      "args": ["-y", "yl-mcp-git-server"],
+      "env": {
+        "DEBUG": "true",
+        "LOG_LEVEL": "debug",
+        "LOG_FILE": "/tmp/yl-mcp-git-debug.log"
+      }
+    },
+    "yl-git-server-local": {
+      "command": "node",
+      "args": ["/path/to/yl-mcp-git-server/src/index.js"],
+      "env": {
+        "DEBUG": "true",
+        "LOG_LEVEL": "debug"
+      }
+    }
+  }
+}

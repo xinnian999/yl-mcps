@@ -1,14 +1,75 @@
 import { execSync } from 'child_process';
 import fs from 'fs';
 import path from 'path';
-import { PROJECT_ROOT, GITIGNORE_TEMPLATE } from './config.js';
+import { GITIGNORE_TEMPLATE } from './config.js';
+import { debugUtils } from './debug.js';
+
+// 全局工作目录变量
+let globalWorkingDirectory = null;
+
+/**
+ * 获取用户的实际工作目录
+ * 优先级：手动设置 > 环境变量 > 从客户端传递的目录 > 当前目录
+ */
+function getUserWorkingDirectory() {
+  // 1. 检查是否手动设置了工作目录
+  if (globalWorkingDirectory) {
+    return globalWorkingDirectory;
+  }
+  
+  // 2. 检查环境变量
+  if (process.env.MCP_WORKING_DIR) {
+    return process.env.MCP_WORKING_DIR;
+  }
+  
+  // 3. 检查是否有传递的工作目录参数
+  const cwdArg = process.argv.find(arg => arg.startsWith('--cwd='));
+  if (cwdArg) {
+    return cwdArg.split('=')[1];
+  }
+  
+  // 4. 尝试从 PWD 环境变量获取（更准确的当前目录）
+  if (process.env.PWD && process.env.PWD !== '/') {
+    return process.env.PWD;
+  }
+  
+  // 5. 最后使用 process.cwd()
+  return process.cwd();
+}
+
+/**
+ * 设置工作目录
+ */
+export function setWorkingDirectory(path) {
+  if (!fs.existsSync(path)) {
+    throw new Error(`目录不存在: ${path}`);
+  }
+  
+  const stats = fs.statSync(path);
+  if (!stats.isDirectory()) {
+    throw new Error(`路径不是目录: ${path}`);
+  }
+  
+  globalWorkingDirectory = path;
+  debugUtils.info(`工作目录已设置为: ${path}`);
+  
+  return `✅ 工作目录已设置为: ${path}`;
+}
 
 /**
  * 执行 git 命令的通用函数
  */
 function execGitCommand(command, options = {}) {
+  const workingDir = getUserWorkingDirectory();
+  
+  debugUtils.debug(`Executing git command: ${command}`, {
+    workingDir,
+    originalCwd: process.cwd(),
+    pwd: process.env.PWD
+  });
+  
   return execSync(command, {
-    cwd: PROJECT_ROOT,
+    cwd: workingDir,
     encoding: 'utf-8',
     ...options,
   });
@@ -44,7 +105,8 @@ export function gitInit(remoteUrl, branch = 'main') {
   }
   
   // 检测并创建 .gitignore 文件
-  const gitignorePath = path.join(PROJECT_ROOT, '.gitignore');
+  const workingDir = getUserWorkingDirectory();
+  const gitignorePath = path.join(workingDir, '.gitignore');
   if (!fs.existsSync(gitignorePath)) {
     fs.writeFileSync(gitignorePath, GITIGNORE_TEMPLATE, 'utf-8');
     result += `✅ 已创建 .gitignore 文件\n`;
@@ -151,4 +213,42 @@ export function gitSmartCommit(message) {
   }
 
   return `✅ 智能提交成功！\n\n📝 Commit: ${message}\n\n${commitResult}\n${pushResult}`;
+}
+
+/**
+ * 获取工作目录信息（用于调试）
+ */
+export function getWorkingDirectoryInfo() {
+  const workingDir = getUserWorkingDirectory();
+  
+  let result = `📁 **工作目录信息**\n\n`;
+  result += `**当前工作目录**: ${workingDir}\n`;
+  result += `**process.cwd()**: ${process.cwd()}\n`;
+  result += `**PWD 环境变量**: ${process.env.PWD || '未设置'}\n`;
+  result += `**MCP_WORKING_DIR**: ${process.env.MCP_WORKING_DIR || '未设置'}\n\n`;
+  
+  // 检查目录是否存在
+  try {
+    const stats = fs.statSync(workingDir);
+    result += `**目录状态**: ${stats.isDirectory() ? '✅ 有效目录' : '❌ 不是目录'}\n`;
+  } catch (error) {
+    result += `**目录状态**: ❌ 目录不存在 (${error.message})\n`;
+  }
+  
+  // 检查是否是 Git 仓库
+  try {
+    execGitCommand('git rev-parse --git-dir');
+    result += `**Git 仓库**: ✅ 是 Git 仓库\n`;
+    
+    try {
+      const branch = execGitCommand('git branch --show-current').trim();
+      result += `**当前分支**: ${branch || '未知'}\n`;
+    } catch (e) {
+      result += `**当前分支**: 无法获取\n`;
+    }
+  } catch (error) {
+    result += `**Git 仓库**: ❌ 不是 Git 仓库\n`;
+  }
+  
+  return result;
 }
