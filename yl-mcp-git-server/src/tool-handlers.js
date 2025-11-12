@@ -37,24 +37,6 @@ function getUserWorkingDirectory() {
 }
 
 /**
- * 设置工作目录
- */
-function setWorkingDirectory(path) {
-  if (!fs.existsSync(path)) {
-    throw new Error(`目录不存在: ${path}`);
-  }
-  
-  const stats = fs.statSync(path);
-  if (!stats.isDirectory()) {
-    throw new Error(`路径不是目录: ${path}`);
-  }
-  
-  globalWorkingDirectory = path;
-  
-  return `✅ 工作目录已设置为: ${path}`;
-}
-
-/**
  * 执行 git 命令的通用函数
  */
 function execGitCommand(command, options = {}) {
