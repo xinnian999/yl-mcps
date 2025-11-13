@@ -73,6 +73,86 @@ function getStatusDescription(status) {
 }
 
 /**
+ * Git 命令安全配置
+ */
+const GIT_COMMAND_SECURITY = {
+  // 允许的 git 子命令白名单
+  allowedCommands: [
+    'status', 'diff', 'log', 'show', 'branch', 'tag', 'remote',
+    'fetch', 'pull', 'push', 'add', 'commit', 'checkout', 'switch',
+    'merge', 'rebase', 'reset', 'stash', 'clone', 'init',
+    'config', 'ls-files', 'ls-remote', 'describe', 'reflog',
+    'blame', 'grep', 'shortlog', 'cherry-pick', 'revert'
+  ],
+  
+  // 危险命令模式（直接禁止执行）
+  dangerousPatterns: [
+    /--force/i,
+    /--hard/i,
+    /rm\s+/i,
+    /clean\s+-[df]/i,
+    /reset\s+--hard/i,
+    /push\s+.*--force/i,
+    /rebase\s+.*--interactive/i,
+    /filter-branch/i,
+    /gc\s+--aggressive/i,
+    /branch\s+-D/i,
+    /tag\s+-d/i
+  ],
+  
+  // 只读命令（完全安全）
+  readOnlyCommands: [
+    'status', 'diff', 'log', 'show', 'branch', 'tag', 'remote',
+    'ls-files', 'ls-remote', 'describe', 'reflog', 'blame', 'grep', 'shortlog'
+  ]
+};
+
+/**
+ * 验证 git 命令的安全性
+ */
+function validateGitCommand(command) {
+  // 移除 'git ' 前缀（如果存在）
+  const cleanCommand = command.replace(/^git\s+/, '').trim();
+  
+  // 提取主命令
+  const mainCommand = cleanCommand.split(/\s+/)[0];
+  
+  // 检查是否在允许的命令列表中
+  if (!GIT_COMMAND_SECURITY.allowedCommands.includes(mainCommand)) {
+    throw new Error(`❌ 不允许的 git 命令: ${mainCommand}`);
+  }
+  
+  // 检查危险模式
+  for (const pattern of GIT_COMMAND_SECURITY.dangerousPatterns) {
+    if (pattern.test(cleanCommand)) {
+      throw new Error(`❌ 检测到危险命令模式: ${cleanCommand}\n为了安全起见，此命令被禁止执行。`);
+    }
+  }
+  
+  // 检查是否为只读命令
+  const isReadOnly = GIT_COMMAND_SECURITY.readOnlyCommands.includes(mainCommand);
+  
+  return {
+    command: cleanCommand,
+    mainCommand,
+    isReadOnly,
+    isAllowed: true
+  };
+}
+
+/**
+ * 安全执行 git 命令
+ */
+function execGitCommandSafe(command, options = {}) {
+  const validation = validateGitCommand(command);
+  
+  // 构建完整的 git 命令
+  const fullCommand = `git ${validation.command}`;
+  
+  return execGitCommand(fullCommand, options);
+}
+
+/**
  * 工具处理器映射
  */
 export const toolHandlers = {
@@ -424,6 +504,65 @@ export const toolHandlers = {
                   `${commitResult}\n${pushResult}`;
     
     return createResponse(result);
+  }),
+
+  git_command: withErrorHandling(async (args) => {
+    const command = args?.command;
+    
+    if (!command) {
+      throw new Error('请提供要执行的 git 命令');
+    }
+    
+    // 验证命令安全性
+    const validation = validateGitCommand(command);
+    
+    // 执行命令
+    const result = execGitCommandSafe(command);
+    
+    // 根据命令类型添加不同的前缀
+    let prefix = '';
+    if (validation.isReadOnly) {
+      prefix = '📖 ';
+    } else {
+      prefix = '✅ ';
+    }
+    
+    return createResponse(`${prefix}Git 命令执行成功：\n\n命令: git ${validation.command}\n\n输出:\n${result}`);
+  }),
+
+  git_command_help: withErrorHandling(async () => {
+    const helpText = `
+🛠️  通用 Git 命令工具帮助
+
+📋 **支持的命令类别：**
+
+🔍 **查询命令（只读，完全安全）：**
+- status, diff, log, show, branch, tag, remote
+- ls-files, ls-remote, describe, reflog, blame, grep, shortlog
+
+📝 **修改命令（安全操作）：**
+- add, commit, checkout, switch, merge, rebase
+- fetch, pull, push, stash, cherry-pick, revert
+
+🔧 **管理命令：**
+- init, clone, config, reset
+
+⚠️  **安全限制：**
+- 禁止使用 --force, --hard 等危险参数
+- 禁止执行 rm, clean -df, filter-branch 等危险操作
+- 禁止强制删除分支 (-D) 和标签 (-d)
+
+💡 **使用示例：**
+- git_command: { "command": "status" }
+- git_command: { "command": "log --oneline -10" }
+- git_command: { "command": "branch -a" }
+- git_command: { "command": "add ." }
+
+🔒 **安全提示：**
+所有危险命令都被直接禁止，无需额外确认机制。
+`;
+    
+    return createResponse(helpText);
   }),
 };
 

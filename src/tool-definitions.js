@@ -36,20 +36,20 @@ export const TOOL_DEFINITIONS = [
       properties: {},
     },
   },
-  {
-    name: 'git_smart_commit',
-    description: '智能提交：AI根据工作区的改动自动生成commit信息，然后提交到 git 仓库',
-    inputSchema: {
-      type: 'object',
-      properties: {
-        message: {
-          type: 'string',
-          description: 'AI 调用 git_diff 生成的 commit 信息',
-        },
-      },
-      required: ['message'],
-    },
-  },
+  // {
+  //   name: 'git_smart_commit',
+  //   description: '智能提交：AI根据工作区的改动自动生成commit信息，然后提交到 git 仓库',
+  //   inputSchema: {
+  //     type: 'object',
+  //     properties: {
+  //       message: {
+  //         type: 'string',
+  //         description: 'AI 调用 git_diff 生成的 commit 信息',
+  //       },
+  //     },
+  //     required: ['message'],
+  //   },
+  // },
   {
     name: 'set_working_dir',
     description: '设置 Git 操作的工作目录',
@@ -86,14 +86,14 @@ export const TOOL_DEFINITIONS = [
       required: ['branch'],
     },
   },
-  {
-    name: 'git_branch_info',
-    description: '查看分支跟踪关系（git branch -vv）',
-    inputSchema: {
-      type: 'object',
-      properties: {},
-    },
-  },
+  // {
+  //   name: 'git_branch_info',
+  //   description: '查看分支跟踪关系（git branch -vv）',
+  //   inputSchema: {
+  //     type: 'object',
+  //     properties: {},
+  //   },
+  // },
   {
     name: 'git_smart_checkout',
     description: '智能切换分支：自动同步远程并切换到指定分支（自动处理本地分支创建和跟踪）',
@@ -132,6 +132,28 @@ export const TOOL_DEFINITIONS = [
         },
       },
       required: ['card_number'],
+    },
+  },
+  {
+    name: 'git_command',
+    description: '通用 Git 命令执行器：安全地执行各种 git 命令，具有命令白名单和危险命令禁止机制',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        command: {
+          type: 'string',
+          description: '要执行的 git 命令（不需要包含 "git" 前缀），例如：status, log --oneline -10, branch -a',
+        },
+      },
+      required: ['command'],
+    },
+  },
+  {
+    name: 'git_command_help',
+    description: '显示通用 Git 命令工具的帮助信息，包括支持的命令、安全限制和使用示例',
+    inputSchema: {
+      type: 'object',
+      properties: {},
     },
   },
 ];
