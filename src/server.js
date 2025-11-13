@@ -11,7 +11,7 @@ import { handleToolCall } from './tool-handlers.js';
 /**
  * Git MCP 服务器类
  */
-export class GitMCPServer {
+export class YLMCPServer {
   constructor() {
 
     this.server = new Server(

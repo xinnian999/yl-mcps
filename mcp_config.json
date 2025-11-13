@@ -1,8 +1,8 @@
 {
   "mcpServers": {
-    "yl-mcp-git-server": {
+    "yl-mcp-server": {
       "command": "npx",
-      "args": ["-y", "yl-mcp-git-server"]
+      "args": ["-y", "yl-mcp-server"]
     }
   }
 }

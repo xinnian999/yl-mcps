@@ -1,11 +1,11 @@
 {
-  "name": "yl-mcp-git-server",
-  "version": "1.1.4",
+  "name": "yl-mcp-server",
+  "version": "1.2.0",
   "description": "MCP server for automated git operations",
   "type": "module",
   "main": "src/index.js",
   "bin": {
-    "yl-mcp-git-server": "src/index.js"
+    "yl-mcp-server": "src/index.js"
   },
   "scripts": {
     "start": "node src/index.js",

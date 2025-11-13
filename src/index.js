@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-import { GitMCPServer } from './server.js';
+import { YLMCPServer } from './server.js';
 
-const server = new GitMCPServer();
+const server = new YLMCPServer();
 server.run().catch(console.error);

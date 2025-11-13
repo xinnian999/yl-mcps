@@ -1,13 +1,13 @@
 # YL MCP Servers
 
-[![npm version](https://badge.fury.io/js/yl-mcp-git-server.svg)](https://badge.fury.io/js/yl-mcp-git-server)
+[![npm version](https://badge.fury.io/js/yl-mcp-server.svg)](https://badge.fury.io/js/yl-mcp-server)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 一个 MCP (Model Context Protocol) 服务器集合，为 AI 助手提供各种实用工具。通过与 Windsurf、Claude Desktop 等 AI 客户端集成，实现智能化的工作流自动化。
 
 ## 📦 包含的服务器
 
-### 💻 yl-mcp-git-server
+### 💻 yl-mcp-server
 
 一个基于 MCP 的智能 Git 操作服务器，已发布到 npm，可直接通过 npx 使用。
 
@@ -20,13 +20,13 @@
 **📦 安装方式：**
 ```bash
 # 通过 npx 直接使用（推荐）
-npx -y yl-mcp-git-server
+npx -y yl-mcp-server
 
 # 或全局安装
-npm install -g yl-mcp-git-server
+npm install -g yl-mcp-server
 ```
 
-[📄 查看详细文档](./yl-git-server/README.md) | [📦 npm 包页面](https://www.npmjs.com/package/yl-mcp-git-server)
+[📄 查看详细文档](./yl-git-server/README.md) | [📦 npm 包页面](https://www.npmjs.com/package/yl-mcp-server)
 
 ## 🚀 快速开始
 
@@ -39,7 +39,7 @@ npm install -g yl-mcp-git-server
   "mcpServers": {
     "yl-git-server": {
       "command": "npx",
-      "args": ["-y", "yl-mcp-git-server"]
+      "args": ["-y", "yl-mcp-server"]
     }
   }
 }
@@ -48,7 +48,7 @@ npm install -g yl-mcp-git-server
 ### 方式二：全局安装
 
 ```bash
-npm install -g yl-mcp-git-server
+npm install -g yl-mcp-server
 ```
 
 然后配置：
@@ -56,7 +56,7 @@ npm install -g yl-mcp-git-server
 {
   "mcpServers": {
     "yl-git-server": {
-      "command": "yl-mcp-git-server"
+      "command": "yl-mcp-server"
     }
   }
 }
@@ -196,9 +196,9 @@ sudo chown -R $(id -u):$(id -g) "$HOME/.npm"
 
 ## 📊 版本信息
 
-- **yl-mcp-git-server**: v1.0.0
+- **yl-mcp-server**: v1.0.0
 - **更新时间**: 2025-11-12
-- **npm 地址**: https://www.npmjs.com/package/yl-mcp-git-server
+- **npm 地址**: https://www.npmjs.com/package/yl-mcp-server
 
 ## 🤝 贡献
 
@@ -212,7 +212,7 @@ sudo chown -R $(id -u):$(id -g) "$HOME/.npm"
 
 ## 🔗 相关链接
 
-- [📦 npm 包](https://www.npmjs.com/package/yl-mcp-git-server)
+- [📦 npm 包](https://www.npmjs.com/package/yl-mcp-server)
 - [📄 详细文档](./yl-git-server/README.md)
 - [🌐 Model Context Protocol](https://modelcontextprotocol.io/)
 - [💻 Windsurf IDE](https://codeium.com/windsurf)
