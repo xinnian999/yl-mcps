@@ -8,32 +8,14 @@ let globalWorkingDirectory = null;
 
 /**
  * 获取用户的实际工作目录
- * 优先级：手动设置 > 环境变量 > 从客户端传递的目录 > 当前目录
+ * 必须先通过 set_working_dir 设置工作目录
  */
 function getUserWorkingDirectory() {
-  // 1. 检查是否手动设置了工作目录
-  if (globalWorkingDirectory) {
-    return globalWorkingDirectory;
+  if (!globalWorkingDirectory) {
+    throw new Error('❌ 尚未设置工作目录！请先调用 set_working_dir 工具设置正确的工作目录。');
   }
   
-  // 2. 检查环境变量
-  if (process.env.MCP_WORKING_DIR) {
-    return process.env.MCP_WORKING_DIR;
-  }
-  
-  // 3. 检查是否有传递的工作目录参数
-  const cwdArg = process.argv.find(arg => arg.startsWith('--cwd='));
-  if (cwdArg) {
-    return cwdArg.split('=')[1];
-  }
-  
-  // 4. 尝试从 PWD 环境变量获取（更准确的当前目录）
-  if (process.env.PWD && process.env.PWD !== '/') {
-    return process.env.PWD;
-  }
-  
-  // 5. 最后使用 process.cwd()
-  return process.cwd();
+  return globalWorkingDirectory;
 }
 
 /**
@@ -235,18 +217,19 @@ export const toolHandlers = {
       throw new Error('请提供工作目录路径');
     }
     
+    // 验证路径是否存在且为目录
     if (!fs.existsSync(dirPath)) {
       throw new Error(`目录不存在: ${dirPath}`);
     }
     
-    const stats = fs.statSync(dirPath);
-    if (!stats.isDirectory()) {
+    if (!fs.statSync(dirPath).isDirectory()) {
       throw new Error(`路径不是目录: ${dirPath}`);
     }
     
-    globalWorkingDirectory = dirPath;
+    // 设置全局工作目录
+    globalWorkingDirectory = path.resolve(dirPath);
     
-    return createResponse(`✅ 工作目录已设置为: ${dirPath}`);
+    return createResponse(`✅ 工作目录已设置为: ${globalWorkingDirectory}`);
   }),
 
   git_fetch: withErrorHandling(async () => {
