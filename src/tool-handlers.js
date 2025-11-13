@@ -50,6 +50,7 @@ function withErrorHandling(handler) {
     try {
       return await handler(args);
     } catch (error) {
+      
       return createResponse(`❌ 操作失败：\n${error.message}\n${error.stderr || ''}`, true);
     }
   };

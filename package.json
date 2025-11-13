@@ -1,6 +1,6 @@
 {
   "name": "yl-mcp-server",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "MCP server for automated git operations",
   "type": "module",
   "main": "src/index.js",
