@@ -52,7 +52,7 @@ export const TOOL_DEFINITIONS = [
   },
   {
     name: 'git_smart_commit',
-    description: '智能提交：先读取改动内容，AI 生成合适的 commit 信息后再提交并推送',
+    description: '智能提交：只提交暂存区的文件，如果暂存区为空则提示先使用 git_add 添加文件',
     inputSchema: {
       type: 'object',
       properties: {
@@ -120,6 +120,14 @@ export const TOOL_DEFINITIONS = [
         },
       },
       required: ['branch_number'],
+    },
+  },
+  {
+    name: 'git_check_working_tree',
+    description: '检查工作区状态是否干净（git status --porcelain）',
+    inputSchema: {
+      type: 'object',
+      properties: {},
     },
   },
 ];
