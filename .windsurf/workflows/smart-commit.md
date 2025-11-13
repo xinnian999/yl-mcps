@@ -1,5 +1,6 @@
 ---
 description: 智能提交工作流 - 通过组合Git命令实现智能提交
+auto_execution_mode: 1
 ---
 
 # 智能提交工作流
