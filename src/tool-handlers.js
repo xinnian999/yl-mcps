@@ -179,17 +179,6 @@ export const toolHandlers = {
     return createResponse(result);
   }),
 
-  git_add: withErrorHandling(async (args) => {
-    const files = args?.files || '.';
-    execGitCommand(`git add ${files}`);
-    
-    // 获取添加后的状态
-    const statusResult = execGitCommand('git status --short');
-    
-    const result = `✅ 文件已添加到暂存区: ${files}\n\n📊 当前状态：\n${statusResult}`;
-    return createResponse(result);
-  }),
-
   git_smart_commit: withErrorHandling(async (args) => {
     const message = args?.message;
     

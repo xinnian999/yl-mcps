@@ -37,20 +37,6 @@ export const TOOL_DEFINITIONS = [
     },
   },
   {
-    name: 'git_add',
-    description: '添加文件到暂存区（git add）',
-    inputSchema: {
-      type: 'object',
-      properties: {
-        files: {
-          type: 'string',
-          description: '要添加的文件路径，使用 "." 添加所有文件，或指定具体文件路径',
-          default: '.',
-        },
-      },
-    },
-  },
-  {
     name: 'git_smart_commit',
     description: '智能提交：只提交暂存区的文件，如果暂存区为空则提示先使用 git_add 添加文件',
     inputSchema: {
