@@ -20,22 +20,22 @@ export const TOOL_DEFINITIONS = [
       },
     },
   },
-  {
-    name: 'git_status',
-    description: '查看 git 状态',
-    inputSchema: {
-      type: 'object',
-      properties: {},
-    },
-  },
-  {
-    name: 'git_diff',
-    description: '查看所有改动内容，同时显示已暂存和未暂存的文件修改',
-    inputSchema: {
-      type: 'object',
-      properties: {},
-    },
-  },
+  // {
+  //   name: 'git_status',
+  //   description: '查看 git 状态',
+  //   inputSchema: {
+  //     type: 'object',
+  //     properties: {},
+  //   },
+  // },
+  // {
+  //   name: 'git_diff',
+  //   description: '查看所有改动内容，同时显示已暂存和未暂存的文件修改',
+  //   inputSchema: {
+  //     type: 'object',
+  //     properties: {},
+  //   },
+  // },
   // {
   //   name: 'git_smart_commit',
   //   description: '智能提交：AI根据工作区的改动自动生成commit信息，然后提交到 git 仓库',
@@ -64,28 +64,28 @@ export const TOOL_DEFINITIONS = [
       required: ['path'],
     },
   },
-  {
-    name: 'git_fetch',
-    description: '同步远程仓库信息（git fetch）',
-    inputSchema: {
-      type: 'object',
-      properties: {},
-    },
-  },
-  {
-    name: 'git_checkout',
-    description: '切换到指定分支（git checkout）',
-    inputSchema: {
-      type: 'object',
-      properties: {
-        branch: {
-          type: 'string',
-          description: '要切换到的分支名称',
-        },
-      },
-      required: ['branch'],
-    },
-  },
+  // {
+  //   name: 'git_fetch',
+  //   description: '同步远程仓库信息（git fetch）',
+  //   inputSchema: {
+  //     type: 'object',
+  //     properties: {},
+  //   },
+  // },
+  // {
+  //   name: 'git_checkout',
+  //   description: '切换到指定分支（git checkout）',
+  //   inputSchema: {
+  //     type: 'object',
+  //     properties: {
+  //       branch: {
+  //         type: 'string',
+  //         description: '要切换到的分支名称',
+  //       },
+  //     },
+  //     required: ['branch'],
+  //   },
+  // },
   // {
   //   name: 'git_branch_info',
   //   description: '查看分支跟踪关系（git branch -vv）',
@@ -108,14 +108,14 @@ export const TOOL_DEFINITIONS = [
       required: ['branch_number'],
     },
   },
-  {
-    name: 'git_check_working_tree',
-    description: '检查工作区状态是否干净（git status --porcelain）',
-    inputSchema: {
-      type: 'object',
-      properties: {},
-    },
-  },
+  // {
+  //   name: 'git_check_working_tree',
+  //   description: '检查工作区状态是否干净（git status --porcelain）',
+  //   inputSchema: {
+  //     type: 'object',
+  //     properties: {},
+  //   },
+  // },
   {
     name: 'git_smart_review',
     description: '智能提交评审：根据卡片代号自动生成commit信息并推送到评审分支',
