@@ -78,4 +78,48 @@ export const TOOL_DEFINITIONS = [
       required: ['path'],
     },
   },
+  {
+    name: 'git_fetch',
+    description: '同步远程仓库信息（git fetch）',
+    inputSchema: {
+      type: 'object',
+      properties: {},
+    },
+  },
+  {
+    name: 'git_checkout',
+    description: '切换到指定分支（git checkout）',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        branch: {
+          type: 'string',
+          description: '要切换到的分支名称',
+        },
+      },
+      required: ['branch'],
+    },
+  },
+  {
+    name: 'git_branch_info',
+    description: '查看分支跟踪关系（git branch -vv）',
+    inputSchema: {
+      type: 'object',
+      properties: {},
+    },
+  },
+  {
+    name: 'git_smart_checkout',
+    description: '智能切换分支：自动同步远程并切换到指定分支（自动处理本地分支创建和跟踪）',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        branch_number: {
+          type: 'string',
+          description: '分支名称（完整的分支名称）',
+        },
+      },
+      required: ['branch_number'],
+    },
+  },
 ];

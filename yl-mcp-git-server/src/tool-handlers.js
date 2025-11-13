@@ -229,6 +229,41 @@ export const toolHandlers = {
     
     return createResponse(`✅ 工作目录已设置为: ${dirPath}`);
   }),
+
+  git_fetch: withErrorHandling(async () => {
+    const result = execGitCommand('git fetch');
+    return createResponse(`✅ 远程仓库信息同步成功\n${result}`);
+  }),
+
+  git_checkout: withErrorHandling(async (args) => {
+    const branch = args?.branch;
+    if (!branch) {
+      throw new Error('请提供分支名称');
+    }
+    
+    const result = execGitCommand(`git checkout ${branch}`);
+    return createResponse(`✅ 已切换到分支: ${branch}\n${result}`);
+  }),
+
+  git_branch_info: withErrorHandling(async () => {
+    const result = execGitCommand('git branch -vv');
+    return createResponse(`📊 分支跟踪信息：\n${result}`);
+  }),
+
+  git_smart_checkout: withErrorHandling(async (args) => {
+    const branchName = args?.branch_number;
+    if (!branchName) {
+      throw new Error('请提供分支名称');
+    }
+    
+    // 1. 同步远程
+    execGitCommand('git fetch');
+    
+    // 2. 直接切换分支，Git 会自动处理远程分支跟踪
+    const result = execGitCommand(`git checkout ${branchName}`);
+    
+    return createResponse(`✅ 已切换到分支: ${branchName}\n${result}`);
+  }),
 };
 
 /**
