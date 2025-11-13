@@ -30,7 +30,7 @@ export const TOOL_DEFINITIONS = [
   },
   {
     name: 'git_diff',
-    description: '查看当前的改动内容（git diff 和 git diff --cached），用于生成 commit 信息',
+    description: '查看所有改动内容，同时显示已暂存和未暂存的文件修改',
     inputSchema: {
       type: 'object',
       properties: {},
@@ -38,13 +38,13 @@ export const TOOL_DEFINITIONS = [
   },
   {
     name: 'git_smart_commit',
-    description: '智能提交：只提交暂存区的文件，如果暂存区为空则提示先使用 git_add 添加文件',
+    description: '智能提交：AI根据工作区的改动自动生成commit信息，然后提交到 git 仓库',
     inputSchema: {
       type: 'object',
       properties: {
         message: {
           type: 'string',
-          description: 'AI 生成的 commit 信息',
+          description: 'AI 调用 git_diff 生成的 commit 信息',
         },
       },
       required: ['message'],

@@ -140,42 +140,30 @@ export const toolHandlers = {
   }),
 
   git_diff: withErrorHandling(async () => {
-    // 获取未暂存的改动
-    let unstagedDiff = '';
-    try {
-      unstagedDiff = execGitCommand('git diff');
-    } catch (e) {
-      // 可能没有未暂存的改动
-    }
-
-    // 获取已暂存的改动
-    let stagedDiff = '';
-    try {
-      stagedDiff = execGitCommand('git diff --cached');
-    } catch (e) {
-      // 可能没有已暂存的改动
-    }
-
-    // 获取状态信息
-    const statusResult = execGitCommand('git status --short');
-
-    let result = '📊 Git 改动概览：\n\n';
-    result += `${statusResult}\n`;
+    // 获取未暂存的更改
+    const unstagedDiff = execGitCommand('git diff').trim();
+    
+    // 获取已暂存的更改
+    const stagedDiff = execGitCommand('git diff --cached').trim();
+    
+    let result = '📊 Git 差异对比：\n\n';
     
     if (stagedDiff) {
-      result += '\n📝 已暂存的改动 (git diff --cached)：\n';
-      result += '```diff\n' + stagedDiff + '\n```\n';
+      result += '✅ 已暂存的更改（将被提交）：\n';
+      result += '=' .repeat(50) + '\n';
+      result += stagedDiff + '\n\n';
     }
     
     if (unstagedDiff) {
-      result += '\n📝 未暂存的改动 (git diff)：\n';
-      result += '```diff\n' + unstagedDiff + '\n```\n';
+      result += '⚠️  未暂存的更改（工作区）：\n';
+      result += '=' .repeat(50) + '\n';
+      result += unstagedDiff + '\n\n';
     }
-
+    
     if (!stagedDiff && !unstagedDiff) {
-      result += '\n✅ 没有检测到改动';
+      result += '✨ 没有任何更改需要显示\n';
     }
-
+    
     return createResponse(result);
   }),
 
@@ -186,29 +174,33 @@ export const toolHandlers = {
       throw new Error('请提供 commit 信息');
     }
 
+    // 获取所有需要处理的文件（包括修改、新增、删除等）
+    const allChangedFiles = execGitCommand('git status --porcelain').trim();
+    
+    // 自动添加所有文件到暂存区
+    execGitCommand('git add .');
+    
     // 检查暂存区是否有文件
     const stagedFiles = execGitCommand('git diff --cached --name-only').trim();
     
     if (!stagedFiles) {
-      // 暂存区为空，提示用户先添加文件
-      const statusResult = execGitCommand('git status --short');
-      let result = '⚠️  暂存区为空，无法提交！\n\n';
-      
-      if (statusResult.trim()) {
-        result += '📊 当前状态：\n' + statusResult + '\n\n';
-        result += '💡 请先使用以下方式添加文件到暂存区：\n';
-        result += '- git_add({ files: "具体文件路径" }) - 添加指定文件\n';
-        result += '- git_add({ files: "." }) - 添加所有文件\n';
-        result += '- 然后再调用 git_smart_commit 提交\n';
-      } else {
-        result += '✅ 工作区干净，没有需要提交的文件\n';
-      }
-      
-      return createResponse(result);
+      throw new Error('❌ 智能提交失败：没有文件需要提交！\n\n工作区中没有任何更改需要提交。');
     }
 
-    // 显示将要提交的文件
-    const stagedFilesList = stagedFiles.split('\n').map(file => `  ${file}`).join('\n');
+    // 解析文件状态并显示详细信息
+    let fileDetails = '';
+    if (allChangedFiles) {
+      const lines = allChangedFiles.split('\n');
+      fileDetails = lines.map(line => {
+        const status = line.substring(0, 2);
+        const file = line.substring(3);
+        const statusDesc = getStatusDescription(status.trim() || status[0]);
+        return `  ${file} (${statusDesc})`;
+      }).join('\n');
+    } else {
+      // 如果没有详细状态，至少显示文件名
+      fileDetails = stagedFiles.split('\n').map(file => `  ${file}`).join('\n');
+    }
     
     // 执行 git commit
     const commitResult = execGitCommand(`git commit -m "${message}"`);
@@ -232,7 +224,7 @@ export const toolHandlers = {
       }
     }
 
-    const result = `✅ 智能提交成功！\n\n📝 Commit: ${message}\n📁 已提交文件:\n${stagedFilesList}\n\n${commitResult}\n${pushResult}`;
+    const result = `✅ 智能提交成功！\n\n📝 Commit: ${message}\n📁 已处理文件:\n${fileDetails}\n\n${commitResult}\n${pushResult}`;
     return createResponse(result);
   }),
 
