@@ -1,11 +1,27 @@
 ---
-description: 智能提交工作流 - 通过组合Git命令实现智能提交
+description: 智能提交工作流
 auto_execution_mode: 1
 ---
 
 # 智能提交工作流
 
-这个工作流通过组合多个 `git_command` 调用来实现智能提交功能，替代单独的 `git_smart_commit` 工具。
+这个工作流通过组合多个 `git_command` 调用来实现智能提交功能
+
+## 参数说明
+
+此工作流无需额外参数，会自动：
+- 检测工作区的所有变更
+- 使用AI分析文件变更生成合适的提交信息
+- 自动添加、提交并推送到远程仓库
+
+## 使用示例
+
+```javascript
+{
+  "tool": "smart_push",
+  "arguments": {}
+}
+```
 
 ## 工作流步骤
 

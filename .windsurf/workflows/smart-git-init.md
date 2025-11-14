@@ -1,11 +1,21 @@
 ---
-description: Git仓库初始化工作流 - 通过组合Git命令实现仓库初始化
+description: 智能Git仓库初始化工作流
 auto_execution_mode: 1
 ---
 
 # Git仓库初始化工作流
 
-这个工作流通过组合多个 `git_command` 调用来实现Git仓库初始化功能，替代单独的 `git_init` 工具。
+这个工作流通过组合多个 `git_command` 调用来实现Git仓库初始化功能
+
+## 参数说明
+
+1. **remote_url** (可选): 远程仓库地址
+   - 格式: `git@github.com:username/repo.git` 或 `https://github.com/username/repo.git`
+   - 如果提供，会自动添加为origin远程仓库
+
+2. **branch** (可选): 默认分支名称
+   - 默认值: `main`
+   - 常用选项: `main`, `master`, `develop`
 
 ## 工作流步骤
 
@@ -38,37 +48,6 @@ git remote add origin [远程仓库地址]
 
 - 检查.gitignore文件是否存在
 - 如果不存在，创建包含常用忽略规则的.gitignore文件
-
-## 参数说明
-
-1. **remote_url** (可选): 远程仓库地址
-   - 格式: `git@github.com:username/repo.git` 或 `https://github.com/username/repo.git`
-   - 如果提供，会自动添加为origin远程仓库
-
-2. **branch** (可选): 默认分支名称
-   - 默认值: `main`
-   - 常用选项: `main`, `master`, `develop`
-
-## 使用示例
-
-### 基本初始化
-```javascript
-{
-  "tool": "git_init",
-  "arguments": {}
-}
-```
-
-### 带远程仓库的初始化
-```javascript
-{
-  "tool": "git_init", 
-  "arguments": {
-    "remote_url": "git@github.com:username/repo.git",
-    "branch": "main"
-  }
-}
-```
 
 ## 执行流程
 
