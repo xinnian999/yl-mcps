@@ -31,24 +31,6 @@ export const TOOL_DEFINITIONS = [
     },
   },
   {
-    name: 'git_smart_review',
-    description: '智能提交评审：根据卡片代号自动生成commit信息并推送到评审分支',
-    inputSchema: {
-      type: 'object',
-      properties: {
-        card_number: {
-          type: 'string',
-          description: '卡片代号，例如：bdife-3679',
-        },
-        target_branch: {
-          type: 'string',
-          description: '提交分支名称，例如：master、develop等（可选，默认为当前分支）',
-        },
-      },
-      required: ['card_number'],
-    },
-  },
-  {
     name: 'git_command',
     description: '通用 Git 命令执行器：安全地执行各种 git 命令，具有命令白名单和危险命令禁止机制',
     inputSchema: {
