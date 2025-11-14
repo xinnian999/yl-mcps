@@ -29,5 +29,23 @@ export const TOOL_DEFINITIONS = [
       },
       required: ['command'],
     },
+  },
+  {
+    name: 'get_chrome_cookies',
+    description: '获取 Chrome 浏览器中指定网站的所有 cookies',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        domain: {
+          type: 'string',
+          description: '要获取 cookies 的域名，例如：google.com 或 github.com',
+        },
+        profile: {
+          type: 'string',
+          description: 'Chrome 用户配置文件名称（可选），默认为 Default',
+        },
+      },
+      required: ['domain'],
+    },
   }
 ];
