@@ -70,19 +70,4 @@ export const toolHandlers = {
 
     return createResponse(`✅ 工作目录已设置为: ${resolvedPath}`);
   }),
-
-  git_smart_checkout: withErrorHandling(async (args) => {
-    const branchName = args?.branch_number;
-    if (!branchName) {
-      throw new Error("请提供分支名称");
-    }
-
-    // 1. 同步远程
-    execGitCommandSafe("fetch");
-
-    // 2. 直接切换分支，Git 会自动处理远程分支跟踪
-    const result = execGitCommandSafe(`checkout ${branchName}`);
-
-    return createResponse(`✅ 已切换到分支: ${branchName}\n${result}`);
-  }),
 };
