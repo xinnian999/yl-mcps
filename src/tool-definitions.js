@@ -43,23 +43,5 @@ export const TOOL_DEFINITIONS = [
       },
       required: ['command'],
     },
-  },
-  {
-    name: 'git_init',
-    description: '初始化 git 仓库,可选择性添加远程仓库地址',
-    inputSchema: {
-      type: 'object',
-      properties: {
-        remote_url: {
-          type: 'string',
-          description: '远程仓库地址 (可选),例如: git@github.com:username/repo.git',
-        },
-        branch: {
-          type: 'string',
-          description: '默认分支名称 (可选,默认为 main)',
-          default: 'main',
-        },
-      },
-    },
   }
 ];

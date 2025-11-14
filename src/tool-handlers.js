@@ -1,7 +1,7 @@
-import { execSync } from 'child_process';
-import fs from 'fs';
-import path from 'path';
-import { GITIGNORE_TEMPLATE } from './config.js';
+import { execSync } from "child_process";
+import fs from "fs";
+import path from "path";
+import { GITIGNORE_TEMPLATE } from "./config.js";
 
 // 全局工作目录变量
 let globalWorkingDirectory = null;
@@ -12,9 +12,11 @@ let globalWorkingDirectory = null;
  */
 function getUserWorkingDirectory() {
   if (!globalWorkingDirectory) {
-    throw new Error('❌ 尚未设置工作目录！请先调用 set_working_dir 工具设置正确的工作目录。');
+    throw new Error(
+      "❌ 尚未设置工作目录！请先调用 set_working_dir 工具设置正确的工作目录。"
+    );
   }
-  
+
   return globalWorkingDirectory;
 }
 
@@ -23,11 +25,10 @@ function getUserWorkingDirectory() {
  */
 function execGitCommand(command, options = {}) {
   const workingDir = getUserWorkingDirectory();
-  
-  
+
   return execSync(command, {
     cwd: workingDir,
-    encoding: 'utf-8',
+    encoding: "utf-8",
     ...options,
   });
 }
@@ -37,7 +38,7 @@ function execGitCommand(command, options = {}) {
  */
 function createResponse(text, isError = false) {
   return {
-    content: [{ type: 'text', text }],
+    content: [{ type: "text", text }],
     ...(isError && { isError: true }),
   };
 }
@@ -50,8 +51,10 @@ function withErrorHandling(handler) {
     try {
       return await handler(args);
     } catch (error) {
-      
-      return createResponse(`❌ 操作失败：\n${error.message}\n${error.stderr || ''}`, true);
+      return createResponse(
+        `❌ 操作失败：\n${error.message}\n${error.stderr || ""}`,
+        true
+      );
     }
   };
 }
@@ -62,13 +65,38 @@ function withErrorHandling(handler) {
 const GIT_COMMAND_SECURITY = {
   // 允许的 git 子命令白名单
   allowedCommands: [
-    'status', 'diff', 'log', 'show', 'branch', 'tag', 'remote',
-    'fetch', 'pull', 'push', 'add', 'commit', 'checkout', 'switch',
-    'merge', 'rebase', 'reset', 'stash', 'clone', 'init',
-    'config', 'ls-files', 'ls-remote', 'describe', 'reflog',
-    'blame', 'grep', 'shortlog', 'cherry-pick', 'revert'
+    "status",
+    "diff",
+    "log",
+    "show",
+    "branch",
+    "tag",
+    "remote",
+    "fetch",
+    "pull",
+    "push",
+    "add",
+    "commit",
+    "checkout",
+    "switch",
+    "merge",
+    "rebase",
+    "reset",
+    "stash",
+    "clone",
+    "init",
+    "config",
+    "ls-files",
+    "ls-remote",
+    "describe",
+    "reflog",
+    "blame",
+    "grep",
+    "shortlog",
+    "cherry-pick",
+    "revert",
   ],
-  
+
   // 危险命令模式（直接禁止执行）
   dangerousPatterns: [
     /--force/i,
@@ -81,14 +109,26 @@ const GIT_COMMAND_SECURITY = {
     /filter-branch/i,
     /gc\s+--aggressive/i,
     /branch\s+-D/i,
-    /tag\s+-d/i
+    /tag\s+-d/i,
   ],
-  
+
   // 只读命令（完全安全）
   readOnlyCommands: [
-    'status', 'diff', 'log', 'show', 'branch', 'tag', 'remote',
-    'ls-files', 'ls-remote', 'describe', 'reflog', 'blame', 'grep', 'shortlog'
-  ]
+    "status",
+    "diff",
+    "log",
+    "show",
+    "branch",
+    "tag",
+    "remote",
+    "ls-files",
+    "ls-remote",
+    "describe",
+    "reflog",
+    "blame",
+    "grep",
+    "shortlog",
+  ],
 };
 
 /**
@@ -96,31 +136,34 @@ const GIT_COMMAND_SECURITY = {
  */
 function validateGitCommand(command) {
   // 移除 'git ' 前缀（如果存在）
-  const cleanCommand = command.replace(/^git\s+/, '').trim();
-  
+  const cleanCommand = command.replace(/^git\s+/, "").trim();
+
   // 提取主命令
   const mainCommand = cleanCommand.split(/\s+/)[0];
-  
+
   // 检查是否在允许的命令列表中
   if (!GIT_COMMAND_SECURITY.allowedCommands.includes(mainCommand)) {
     throw new Error(`❌ 不允许的 git 命令: ${mainCommand}`);
   }
-  
+
   // 检查危险模式
   for (const pattern of GIT_COMMAND_SECURITY.dangerousPatterns) {
     if (pattern.test(cleanCommand)) {
-      throw new Error(`❌ 检测到危险命令模式: ${cleanCommand}\n为了安全起见，此命令被禁止执行。`);
+      throw new Error(
+        `❌ 检测到危险命令模式: ${cleanCommand}\n为了安全起见，此命令被禁止执行。`
+      );
     }
   }
-  
+
   // 检查是否为只读命令
-  const isReadOnly = GIT_COMMAND_SECURITY.readOnlyCommands.includes(mainCommand);
-  
+  const isReadOnly =
+    GIT_COMMAND_SECURITY.readOnlyCommands.includes(mainCommand);
+
   return {
     command: cleanCommand,
     mainCommand,
     isReadOnly,
-    isAllowed: true
+    isAllowed: true,
   };
 }
 
@@ -129,10 +172,10 @@ function validateGitCommand(command) {
  */
 function execGitCommandSafe(command, options = {}) {
   const validation = validateGitCommand(command);
-  
+
   // 构建完整的 git 命令
   const fullCommand = `git ${validation.command}`;
-  
+
   return execGitCommand(fullCommand, options);
 }
 
@@ -141,119 +184,77 @@ function execGitCommandSafe(command, options = {}) {
  */
 export async function handleToolCall(toolName, args) {
   const handler = toolHandlers[toolName];
-  
+
   if (!handler) {
     throw new Error(`Unknown tool: ${toolName}`);
   }
-  
+
   return await handler(args);
 }
-
 
 /**
  * 工具处理器映射
  */
 export const toolHandlers = {
-  git_init: withErrorHandling(async (args) => {
-    const remoteUrl = args?.remote_url;
-    const branch = args?.branch || 'main';
-    
-    let result = '';
-    
-    // 初始化 git 仓库
-    const initResult = execGitCommand('git init');
-    result += `✅ Git 仓库初始化成功\n${initResult}\n`;
-    
-    // 设置默认分支名称
-    try {
-      execGitCommand(`git branch -M ${branch}`);
-      result += `✅ 默认分支设置为: ${branch}\n`;
-    } catch (e) {
-      result += `ℹ️  默认分支将在首次提交后设置为: ${branch}\n`;
+  git_command: withErrorHandling(async (args) => {
+    const command = args?.command;
+
+    if (!command) {
+      throw new Error("请提供要执行的 git 命令");
     }
-    
-    // 如果提供了远程仓库地址,添加 remote
-    if (remoteUrl) {
-      try {
-        execGitCommand(`git remote add origin ${remoteUrl}`);
-        result += `✅ 远程仓库已添加: ${remoteUrl}\n`;
-      } catch (e) {
-        result += `⚠️  添加远程仓库失败: ${e.message}\n`;
-      }
-    }
-    
-    // 检测并创建 .gitignore 文件
-    const workingDir = getUserWorkingDirectory();
-    const gitignorePath = path.join(workingDir, '.gitignore');
-    if (!fs.existsSync(gitignorePath)) {
-      fs.writeFileSync(gitignorePath, GITIGNORE_TEMPLATE, 'utf-8');
-      result += `✅ 已创建 .gitignore 文件\n`;
+
+    // 验证命令安全性
+    const validation = validateGitCommand(command);
+
+    // 执行命令
+    const result = execGitCommandSafe(command);
+
+    // 根据命令类型添加不同的前缀
+    let prefix = "";
+    if (validation.isReadOnly) {
+      prefix = "📖 ";
     } else {
-      result += `ℹ️  .gitignore 文件已存在，跳过创建\n`;
+      prefix = "✅ ";
     }
-    
-    return createResponse(result);
+
+    return createResponse(
+      `${prefix}Git 命令执行成功：\n\n命令: git ${validation.command}\n\n输出:\n${result}`
+    );
   }),
-
-
+  
   set_working_dir: withErrorHandling(async (args) => {
     const dirPath = args?.path;
     if (!dirPath) {
-      throw new Error('请提供工作目录路径');
+      throw new Error("请提供工作目录路径");
     }
-    
+
     // 验证路径是否存在且为目录
     if (!fs.existsSync(dirPath)) {
       throw new Error(`目录不存在: ${dirPath}`);
     }
-    
+
     if (!fs.statSync(dirPath).isDirectory()) {
       throw new Error(`路径不是目录: ${dirPath}`);
     }
-    
+
     // 设置全局工作目录
     globalWorkingDirectory = path.resolve(dirPath);
-    
+
     return createResponse(`✅ 工作目录已设置为: ${globalWorkingDirectory}`);
   }),
 
   git_smart_checkout: withErrorHandling(async (args) => {
     const branchName = args?.branch_number;
     if (!branchName) {
-      throw new Error('请提供分支名称');
+      throw new Error("请提供分支名称");
     }
-    
+
     // 1. 同步远程
-    execGitCommand('git fetch');
-    
+    execGitCommandSafe("fetch");
+
     // 2. 直接切换分支，Git 会自动处理远程分支跟踪
-    const result = execGitCommand(`git checkout ${branchName}`);
-    
+    const result = execGitCommandSafe(`checkout ${branchName}`);
+
     return createResponse(`✅ 已切换到分支: ${branchName}\n${result}`);
   }),
-
-  git_command: withErrorHandling(async (args) => {
-    const command = args?.command;
-    
-    if (!command) {
-      throw new Error('请提供要执行的 git 命令');
-    }
-    
-    // 验证命令安全性
-    const validation = validateGitCommand(command);
-    
-    // 执行命令
-    const result = execGitCommandSafe(command);
-    
-    // 根据命令类型添加不同的前缀
-    let prefix = '';
-    if (validation.isReadOnly) {
-      prefix = '📖 ';
-    } else {
-      prefix = '✅ ';
-    }
-    
-    return createResponse(`${prefix}Git 命令执行成功：\n\n命令: git ${validation.command}\n\n输出:\n${result}`);
-  })
 };
-
