@@ -4,7 +4,6 @@ import {
   CallToolRequestSchema,
   ListToolsRequestSchema,
 } from '@modelcontextprotocol/sdk/types.js';
-import { SERVER_CONFIG } from './config.js';
 import { TOOL_DEFINITIONS } from './tool-definitions.js';
 import { handleToolCall } from './tool-handlers.js';
 
@@ -16,8 +15,8 @@ export class YLMCPServer {
 
     this.server = new Server(
       {
-        name: SERVER_CONFIG.name,
-        version: SERVER_CONFIG.version,
+        name: 'yl-mcp-server',
+        version: '1.2.0',
       },
       {
         capabilities: {
