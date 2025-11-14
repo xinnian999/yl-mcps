@@ -4,14 +4,15 @@ import {
   CallToolRequestSchema,
   ListToolsRequestSchema,
 } from '@modelcontextprotocol/sdk/types.js';
-import { TOOL_DEFINITIONS } from './tool-definitions.js';
-import { handleToolCall } from './tool-handlers.js';
+import { loadTools } from './tools/index.js';
 
 /**
  * Git MCP 服务器类
  */
 export class YLMCPServer {
   constructor() {
+    this.tools = [];
+    this.handlers = {};
 
     this.server = new Server(
       {
@@ -25,9 +26,17 @@ export class YLMCPServer {
       }
     );
 
-    this.setupToolHandlers();
     this.setupErrorHandling();
-    
+  }
+
+  /**
+   * 初始化工具
+   */
+  async initialize() {
+    const { tools, handlers } = await loadTools();
+    this.tools = tools;
+    this.handlers = handlers;
+    this.setupToolHandlers();
   }
 
   /**
@@ -36,7 +45,7 @@ export class YLMCPServer {
   setupToolHandlers() {
     // 列出所有工具
     this.server.setRequestHandler(ListToolsRequestSchema, async () => ({
-      tools: TOOL_DEFINITIONS,
+      tools: this.tools,
     }));
 
     // 调用工具
@@ -44,7 +53,13 @@ export class YLMCPServer {
       const { name, arguments: args } = request.params;
       
       try {
-        const result = await handleToolCall(name, args);
+        const handler = this.handlers[name];
+        
+        if (!handler) {
+          throw new Error(`Unknown tool: ${name}`);
+        }
+        
+        const result = await handler(args);
         
         return result;
       } catch (error) {
@@ -82,6 +97,9 @@ export class YLMCPServer {
    */
   async run() {
     try {
+      // 先初始化工具
+      await this.initialize();
+      
       const transport = new StdioServerTransport();
       
       await this.server.connect(transport);
