@@ -5,7 +5,7 @@ auto_execution_mode: 1
 
 # 智能提交评审工作流
 
-这个工作流通过组合多个 `git_command` 调用来实现智能提交评审功能，替代单独的 `git_smart_review` 工具。
+这个工作流通过组合多个 `git_command` 调用来实现智能提交评审功能
 
 ##  参数
    - `card_number`: 必需，卡片代号（如：bdife-3679）
